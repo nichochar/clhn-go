@@ -14,12 +14,13 @@ import (
 const (
 	storiesFeedURL = "https://hacker-news.firebaseio.com/v0/%sstories.json"
 	oneItemURL     = "https://hacker-news.firebaseio.com/v0/item/%d.json"
+	threadURL      = "https://news.ycombinator.com/item?id=%d"
 	defaultCount   = 10
 	defaultFeed    = "top"
 )
 
 // Returns an array of story IDs
-func fetchStories(count int, feedType string) []int {
+func fetchStories(feedType string) []int {
 	url := fmt.Sprintf(storiesFeedURL, feedType)
 	resp, err := http.Get(url)
 	if err != nil {
@@ -54,24 +55,20 @@ func fetchOne(item int) map[string]interface{} {
 }
 
 func printOne(item map[string]interface{}) {
-	switch itype := item["type"]; itype {
-	case "story":
-		score, ok := item["score"].(float64)
-		intScore := int(score)
-		if ok {
-			o := color.New(color.FgHiRed)
-			o.Printf("\n(%d) %s\n", intScore, item["title"])
-			d := color.New(color.FgCyan, color.Bold)
-			d.Printf(" > %s\n", item["url"])
+	score, ok := item["score"].(float64)
+	intScore := int(score)
+	if ok {
+		o := color.New(color.FgHiRed)
+		o.Printf("\n(%d) %s\n", intScore, item["title"])
+		d := color.New(color.FgCyan, color.Bold)
+		url, ok := item["url"]
+		if ok == false {
+			// This conversion seems shitty, can I do better?
+			floatID := item["id"].(float64)
+			id := int(floatID)
+			url = fmt.Sprintf(threadURL, id)
 		}
-	case "comment":
-		fmt.Println("It's a comment! Skipping...")
-	case "job":
-		fmt.Println("It's a job! Skipping...")
-	case "poll":
-		fmt.Println("It's a poll! Skipping...")
-	case "pollopt":
-		fmt.Println("It's a pollopt! Skipping...")
+		d.Printf(" > %s\n", url)
 	}
 }
 
@@ -103,8 +100,8 @@ func main() {
 			printUsage()
 		}
 	}
-	storyIDs := fetchStories(count, feedType)
-	for i := 0; i < 5; i++ {
+	storyIDs := fetchStories(feedType)
+	for i := 0; i < count; i++ {
 		one := fetchOne(storyIDs[i])
 		printOne(one)
 	}
