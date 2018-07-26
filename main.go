@@ -7,16 +7,21 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 const (
-	topStoriesURL = "https://hacker-news.firebaseio.com/v0/topstories.json"
-	oneItemURL    = "https://hacker-news.firebaseio.com/v0/item/%d.json"
+	storiesFeedURL = "https://hacker-news.firebaseio.com/v0/%sstories.json"
+	oneItemURL     = "https://hacker-news.firebaseio.com/v0/item/%d.json"
+	defaultCount   = 10
+	defaultFeed    = "top"
 )
 
 // Returns an array of story IDs
-func fetchStories(count int) []int {
-	resp, err := http.Get(topStoriesURL)
+func fetchStories(count int, feedType string) []int {
+	url := fmt.Sprintf(storiesFeedURL, feedType)
+	resp, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -70,12 +75,37 @@ func printOne(item map[string]interface{}) {
 	}
 }
 
+func printUsage() {
+	fmt.Println("Usage: ./hn <best|top> <count||int>")
+}
+
 func main() {
-	storyIDs := fetchStories(10)
-	storyIDs = storyIDs[0:5]
+	args := os.Args
+	var count int
+	var feedType string
+	if len(args) > 1 && (args[1] == "-h" || args[1] == "-help") {
+		printUsage()
+	} else {
+		if len(args) == 1 {
+			feedType = defaultFeed
+			count = defaultCount
+		} else if len(args) == 3 {
+			feedType = args[1]
+			countStr := args[2]
+			countInt, err := strconv.Atoi(countStr)
+			if err != nil {
+				// handle error
+				fmt.Println(err)
+				os.Exit(2)
+			}
+			count = countInt
+		} else {
+			printUsage()
+		}
+	}
+	storyIDs := fetchStories(count, feedType)
 	for i := 0; i < 5; i++ {
 		one := fetchOne(storyIDs[i])
 		printOne(one)
-
 	}
 }
