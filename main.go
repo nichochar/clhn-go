@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/fatih/color"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -53,16 +54,19 @@ func printOne(item map[string]interface{}) {
 		score, ok := item["score"].(float64)
 		intScore := int(score)
 		if ok {
-			fmt.Printf("\n(%d) %s\n > %s\n", intScore, item["title"], item["url"])
+			o := color.New(color.FgHiRed)
+			o.Printf("\n(%d) %s\n", intScore, item["title"])
+			d := color.New(color.FgCyan, color.Bold)
+			d.Printf(" > %s\n", item["url"])
 		}
 	case "comment":
-		fmt.Println("It's a comment!")
+		fmt.Println("It's a comment! Skipping...")
 	case "job":
-		fmt.Println("It's a job")
+		fmt.Println("It's a job! Skipping...")
 	case "poll":
-		fmt.Println("It's a poll!")
+		fmt.Println("It's a poll! Skipping...")
 	case "pollopt":
-		fmt.Println("It's a pollopt")
+		fmt.Println("It's a pollopt! Skipping...")
 	}
 }
 
