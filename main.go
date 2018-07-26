@@ -82,6 +82,7 @@ func main() {
 	var feedType string
 	if len(args) > 1 && (args[1] == "-h" || args[1] == "-help") {
 		printUsage()
+		os.Exit(0)
 	} else {
 		if len(args) == 1 {
 			feedType = defaultFeed
