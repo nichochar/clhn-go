@@ -1,58 +1,18 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/fatih/color"
-	"io/ioutil"
-	"log"
-	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/fatih/color"
 )
 
 const (
-	storiesFeedURL = "https://hacker-news.firebaseio.com/v0/%sstories.json"
-	oneItemURL     = "https://hacker-news.firebaseio.com/v0/item/%d.json"
-	threadURL      = "https://news.ycombinator.com/item?id=%d"
-	defaultCount   = 10
-	defaultFeed    = "top"
+	threadURL    = "https://news.ycombinator.com/item?id=%d"
+	defaultCount = 10
+	defaultFeed  = "top"
 )
-
-// Returns an array of story IDs
-func fetchStories(feedType string) []int {
-	url := fmt.Sprintf(storiesFeedURL, feedType)
-	resp, err := http.Get(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	var m []int
-	err = json.Unmarshal(body, &m)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return m
-}
-
-func fetchOne(item int) map[string]interface{} {
-	url := fmt.Sprintf(oneItemURL, item)
-
-	resp, err := http.Get(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	var m map[string]interface{}
-	err = json.Unmarshal(body, &m)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return m
-}
 
 func printOne(item map[string]interface{}) {
 	score, ok := item["score"].(float64)
@@ -73,7 +33,43 @@ func printOne(item map[string]interface{}) {
 }
 
 func printUsage() {
-	fmt.Println("Usage: ./hn <best|top> <count||int>")
+	fmt.Println("Usage:\n  $ ./hn [best|top] [count]")
+	fmt.Println("Examples:\n  $ ./hn\n  $ ./hn top 5")
+	os.Exit(0)
+}
+
+// Parse incoming arguments, and return (count, feedType)
+func parseArgs(args []string) (int, string) {
+	var count int
+	var feedType string
+	switch len(args) {
+	case 1:
+		feedType = defaultFeed
+		count = defaultCount
+	case 2:
+		// if err is nil this is castable into an int
+		potentialCount, err := strconv.Atoi(args[1])
+		if args[1] == "best" || args[1] == "top" {
+			count = defaultCount
+			feedType = args[1]
+		} else if err == nil {
+			count = potentialCount
+			feedType = defaultFeed
+		} else {
+			printUsage()
+		}
+	case 3:
+		feedType = args[1]
+		countStr := args[2]
+		countInt, err := strconv.Atoi(countStr)
+		if err != nil {
+			// handle error
+			fmt.Println(err)
+			os.Exit(2)
+		}
+		count = countInt
+	}
+	return count, feedType
 }
 
 func main() {
