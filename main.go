@@ -64,8 +64,7 @@ func parseArgs(args []string) (int, string) {
 		countInt, err := strconv.Atoi(countStr)
 		if err != nil {
 			// handle error
-			fmt.Println(err)
-			os.Exit(2)
+			printUsage()
 		}
 		count = countInt
 	}
@@ -73,30 +72,7 @@ func parseArgs(args []string) (int, string) {
 }
 
 func main() {
-	args := os.Args
-	var count int
-	var feedType string
-	if len(args) > 1 && (args[1] == "-h" || args[1] == "-help") {
-		printUsage()
-		os.Exit(0)
-	} else {
-		if len(args) == 1 {
-			feedType = defaultFeed
-			count = defaultCount
-		} else if len(args) == 3 {
-			feedType = args[1]
-			countStr := args[2]
-			countInt, err := strconv.Atoi(countStr)
-			if err != nil {
-				// handle error
-				fmt.Println(err)
-				os.Exit(2)
-			}
-			count = countInt
-		} else {
-			printUsage()
-		}
-	}
+	count, feedType := parseArgs(os.Args)
 	storyIDs := fetchStories(feedType)
 	for i := 0; i < count; i++ {
 		one := fetchOne(storyIDs[i])
