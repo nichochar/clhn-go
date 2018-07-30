@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/fatih/color"
+	"github.com/aybabtme/rgbterm"
 )
 
 const (
@@ -14,13 +14,28 @@ const (
 	defaultFeed  = "top"
 )
 
+// Helper function to get orange and light white
+func getColor(colorName string) (uint8, uint8, uint8) {
+	switch colorName {
+	case "orange":
+		return 254, 152, 36
+	case "white":
+		return 247, 233, 217
+	default:
+		return 247, 233, 217
+	}
+}
+
+func colorWord(word string, colorName string) string {
+	r, g, b := getColor(colorName)
+	return rgbterm.FgString(word, r, g, b)
+}
+
 func printOne(item map[string]interface{}) {
 	score, ok := item["score"].(float64)
 	intScore := int(score)
 	if ok {
-		o := color.New(color.FgHiRed)
-		o.Printf("\n(%d) %s\n", intScore, item["title"])
-		d := color.New(color.FgCyan, color.Bold)
+		firstLine := fmt.Sprintf("\n(%d) %s\n", intScore, item["title"])
 		url, ok := item["url"]
 		if ok == false {
 			// This conversion seems shitty, can I do better?
@@ -28,7 +43,10 @@ func printOne(item map[string]interface{}) {
 			id := int(floatID)
 			url = fmt.Sprintf(threadURL, id)
 		}
-		d.Printf(" > %s\n", url)
+		secondLine := fmt.Sprintf(" > %s\n", url)
+
+		fmt.Printf(colorWord(firstLine, "orange"))
+		fmt.Printf(colorWord(secondLine, "white"))
 	}
 }
 
