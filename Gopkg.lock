@@ -3,15 +3,13 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:f8c5815a76aec3fac7f6d67911eccd3a93841294052b0e81bca1ff325a1ee62d"
   name = "github.com/aybabtme/rgbterm"
   packages = ["."]
-  pruneopts = "UT"
   revision = "cc83f3b3ce5911279513a46d6d3316d67bedaa54"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = ["github.com/aybabtme/rgbterm"]
+  inputs-digest = "4d52900a726412de5b0582c3aaae8c923e12f899c0b8bfdb93dbb451b8531b72"
   solver-name = "gps-cdcl"
   solver-version = 1

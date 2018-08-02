@@ -9,7 +9,6 @@ import (
 )
 
 const (
-	threadURL    = "https://news.ycombinator.com/item?id=%d"
 	defaultCount = 10
 	defaultFeed  = "top"
 )
@@ -31,23 +30,12 @@ func colorWord(word string, colorName string) string {
 	return rgbterm.FgString(word, r, g, b)
 }
 
-func printOne(item map[string]interface{}) {
-	score, ok := item["score"].(float64)
-	intScore := int(score)
-	if ok {
-		firstLine := fmt.Sprintf("\n(%d) %s\n", intScore, item["title"])
-		url, ok := item["url"]
-		if ok == false {
-			// This conversion seems shitty, can I do better?
-			floatID := item["id"].(float64)
-			id := int(floatID)
-			url = fmt.Sprintf(threadURL, id)
-		}
-		secondLine := fmt.Sprintf(" > %s\n", url)
+func printOne(story Story) {
+	firstLine := fmt.Sprintf("\n(%d) %s\n", story.votes, story.title)
+	secondLine := fmt.Sprintf(" > %s\n", story.url)
 
-		fmt.Printf(colorWord(firstLine, "orange"))
-		fmt.Printf(colorWord(secondLine, "white"))
-	}
+	fmt.Printf(colorWord(firstLine, "orange"))
+	fmt.Printf(colorWord(secondLine, "white"))
 }
 
 func printUsage() {
@@ -91,9 +79,10 @@ func parseArgs(args []string) (int, string) {
 
 func main() {
 	count, feedType := parseArgs(os.Args)
-	storyIDs := fetchStories(feedType)
-	for i := 0; i < count; i++ {
-		one := fetchOne(storyIDs[i])
-		printOne(one)
+	var stories []Story
+	stories = fetchStories(count, feedType)
+
+	for i := 0; i < len(stories); i++ {
+		printOne(stories[i])
 	}
 }
