@@ -4,7 +4,7 @@
 This is a very simple command line client that is more of an exercise for me to try out and learn golang.
 It also becomes a nifty little client, as you can see with screenshot below
 
-![Preview](screenshot.png)
+![Preview](static/screenshot.png)
 
 ### Install
 ```
