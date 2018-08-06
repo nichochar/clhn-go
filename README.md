@@ -1,8 +1,7 @@
 # Command Line Hacker News client
 
 ### What is this
-This is a very simple command line client that is more of an exercise for me to try out and learn golang.
-It also becomes a nifty little client, as you can see with screenshot below
+This is a very simple command line HN client that is more of an exercise for me to try out and learn golang.
 
 ![Preview](static/screenshot.png)
 
