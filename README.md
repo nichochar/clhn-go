@@ -9,17 +9,16 @@ It also becomes a nifty little client, as you can see with screenshot below
 ### Install
 ```
 $ git clone https://github.com/nichochar/clhn-go.git
-$ go -o hn build *.go
-$ hn
+$ go build -o hn build *.go
+$ ./hn
 ```
 
 ### Usage
 ```
-$ hn -h
-
-Usage:
-  $ hn [best|top] [count]
-Examples:
-  $ ./hn
-  $ ./hn top 5
+$ ./hn -h
+$ Usage of ./hn:
+$  -c int
+$    	count: ow many stories that will be fetched (default 10)
+$  -f string
+$    	feedtype: top|best|new (default "top")
 ```

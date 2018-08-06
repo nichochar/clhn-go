@@ -45,8 +45,8 @@ func printUsage() {
 }
 
 func main() {
-	var count = flag.Int("count", defaultCount, "How many stories that will be fetched")
-	var feedType = flag.String("Feedtype", defaultFeed, "Feedtype: top|best|new")
+	var count = flag.Int("c", defaultCount, "count: ow many stories that will be fetched")
+	var feedType = flag.String("f", defaultFeed, "feedtype: top|best|new")
 	flag.Parse()
 
 	var stories []Story
