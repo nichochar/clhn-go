@@ -27,8 +27,8 @@ type Story struct {
 }
 
 // Fetch the list of ids
-func fetchStoryIDs(feedType string) []int {
-	url := fmt.Sprintf(storiesFeedURL, feedType)
+func fetchStoryIDs(feedType *string) []int {
+	url := fmt.Sprintf(storiesFeedURL, *feedType)
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
@@ -79,20 +79,20 @@ func fetchOne(item int, ch chan int) {
 
 // Returns an array of Story structs
 // Fetches them in parallel
-func fetchStories(count int, feedType string) []Story {
+func fetchStories(count *int, feedType *string) []Story {
 	var stories []Story
 	var feed = fetchStoryIDs(feedType)
-	var ch = make(chan int, count)
+	var ch = make(chan int, *count)
 
-	for i := 0; i < count; i++ {
+	for i := 0; i < *count; i++ {
 		go fetchOne(feed[i], ch)
 	}
 
-	for j := 0; j < count; j++ {
+	for j := 0; j < *count; j++ {
 		<-ch
 	}
 
-	for k := 0; k < count; k++ {
+	for k := 0; k < *count; k++ {
 		stories = append(stories, results[feed[k]])
 	}
 

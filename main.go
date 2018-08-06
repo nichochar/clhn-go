@@ -1,9 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
-	"strconv"
 
 	"github.com/aybabtme/rgbterm"
 )
@@ -44,41 +44,11 @@ func printUsage() {
 	os.Exit(0)
 }
 
-// Parse incoming arguments, and return (count, feedType)
-func parseArgs(args []string) (int, string) {
-	var count int
-	var feedType string
-	switch len(args) {
-	case 1:
-		feedType = defaultFeed
-		count = defaultCount
-	case 2:
-		// if err is nil this is castable into an int
-		potentialCount, err := strconv.Atoi(args[1])
-		if args[1] == "best" || args[1] == "top" {
-			count = defaultCount
-			feedType = args[1]
-		} else if err == nil {
-			count = potentialCount
-			feedType = defaultFeed
-		} else {
-			printUsage()
-		}
-	case 3:
-		feedType = args[1]
-		countStr := args[2]
-		countInt, err := strconv.Atoi(countStr)
-		if err != nil {
-			// handle error
-			printUsage()
-		}
-		count = countInt
-	}
-	return count, feedType
-}
-
 func main() {
-	count, feedType := parseArgs(os.Args)
+	var count = flag.Int("count", defaultCount, "How many stories that will be fetched")
+	var feedType = flag.String("Feedtype", defaultFeed, "Feedtype: top|best|new")
+	flag.Parse()
+
 	var stories []Story
 	stories = fetchStories(count, feedType)
 
